@@ -27,6 +27,7 @@ from requests.exceptions import RequestException, SSLError
 from six.moves import http_client
 from six.moves.urllib.parse import quote as _quote, unquote
 from six.moves.urllib.parse import urljoin, urlparse, urlunparse
+from packaging.version import parse
 from time import sleep, time
 import six
 
@@ -73,10 +74,11 @@ try:
 except ImportError:
     pass
 
+
 # requests version 1.2.3 try to encode headers in ascii, preventing
 # utf-8 encoded header to be 'prepared'. This also affects all
 # (or at least most) versions of requests on py3
-if StrictVersion(requests.__version__) < StrictVersion('2.0.0') \
+if parse(requests.__version__) < parse('3.0.0') \
         or not six.PY2:
     from requests.structures import CaseInsensitiveDict
 
@@ -1360,7 +1362,7 @@ def put_object(url, token=None, container=None, name=None, contents=None,
     if content_type is not None:
         headers['Content-Type'] = content_type
     elif 'Content-Type' not in headers:
-        if StrictVersion(requests.__version__) < StrictVersion('2.4.0'):
+        if parse(requests.__version__) < parse('2.4.0'):
             # python-requests sets application/x-www-form-urlencoded otherwise
             # if using python3.
             headers['Content-Type'] = ''
